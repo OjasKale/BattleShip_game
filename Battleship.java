@@ -6,7 +6,7 @@ public class Battleship
       
     public static void main(String[] args)
     {
-        System.out.println("JAVA BATTLESHIP - ** Yuval Marcus **");  
+        System.out.println("JAVA BATTLESHIP - ** Ojas Kale **");  
         
         System.out.println("\nPlayer SETUP:");
         Player userPlayer = new Player();

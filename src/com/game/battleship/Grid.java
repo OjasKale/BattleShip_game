@@ -1,11 +1,18 @@
+package com.game.battleship;
+
+import java.util.HashSet;
+
 public class Grid
 {
     private Location[][] grid;
     private int points;
 
     // Constants for number of rows and columns.
-    public static final int NUM_ROWS = 10;
-    public static final int NUM_COLS = 10;
+    public static final int NUM_ROWS = 6;
+    public static final int NUM_COLS = 6;
+    public HashSet<String> ship1;
+    public HashSet<String> ship2;
+    public HashSet<String> ship3;
     
     public Grid()
     {
@@ -24,6 +31,10 @@ public class Grid
                 grid[row][col] = tempLoc;
             }
         }
+        
+        ship1 = new HashSet<>();
+        ship2 = new HashSet<>();
+        ship3 = new HashSet<>();
     }
     
     // Mark a hit in this location by calling the markHit method
@@ -70,6 +81,11 @@ public class Grid
         return grid[row][col].hasShip();
     }
     
+    //Check If this Position has already Hit
+    public boolean previouslyHit(int row, int col){
+    	return (grid[row][col].getStatus() == 1);
+    }
+    
     // Get the Location object at this row and column position
     public Location get(int row, int col)
     {
@@ -105,18 +121,18 @@ public class Grid
     
     public boolean hasLost()
     {
-        if (points >= 17)
+        if (points >= 8)
             return true;
         else
             return false;
     }
     
-    public void addShip(Ship s)
-    {
+    public HashSet<String> addShip(Ship s){
         int row = s.getRow();
         int col = s.getCol();
         int length = s.getLength();
         int dir = s.getDirection();
+        HashSet<String> ship = new HashSet<>();
         
         if (!(s.isDirectionSet()) || !(s.isLocationSet()))
             throw new IllegalArgumentException("ERROR! Direction or Location is unset/default");
@@ -130,18 +146,21 @@ public class Grid
                 grid[row][i].setShip(true);
                 grid[row][i].setLengthOfShip(length);
                 grid[row][i].setDirectionOfShip(dir);
+                ship.add("" + row + i);
             }
         }
         else if (dir == 1) // Vertical
         {
             for (int i = row; i < row+length; i++)
             {
-                //System.out.println("DEBUG: row = " + row + "; col = " + i);
                 grid[i][col].setShip(true);
                 grid[i][col].setLengthOfShip(length);
                 grid[i][col].setDirectionOfShip(dir);
+                ship.add("" + row + i);
             }
         }
+        
+        return ship;
     }
     
     // Type: 0 for status, 1 for ships, 2 for combined

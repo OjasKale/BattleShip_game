@@ -1,16 +1,25 @@
+package com.game.battleship;
+
+import java.util.HashSet;
+
 public class Player
 {
     // These are the lengths of all of the ships.
-    private static final int[] SHIP_LENGTHS = {2, 3, 3, 4, 5};
-    private static final int NUM_OF_SHIPS = 5;
+    private static final int[] SHIP_LENGTHS = {2, 3, 3};
+    private static final int NUM_OF_SHIPS = 3;
     
+    public HashSet<String> ship1;
+    public HashSet<String> ship2;
+    public HashSet<String> ship3;
+    public PlayerType type;
     public Ship[] ships;
     public Grid playerGrid;
     public Grid oppGrid;
     
     public Player()
     {
-        if (NUM_OF_SHIPS != 5) // Num of ships must be 5
+    	type = PlayerType.HUMAN; //By default Player Type is Human.
+        if (NUM_OF_SHIPS != 3) // Num of ships must be 3
         {
             throw new IllegalArgumentException("ERROR! Num of ships must be 5");
         }
@@ -26,8 +35,9 @@ public class Player
         oppGrid = new Grid();
     }
     
-    public void addShips()
-    {
+    public void addShips(){
+    	System.out.println("Adding all ships: ");
+    	System.out.println(ships);
         for (Ship s: ships)
         {
             playerGrid.addShip(s);
@@ -36,7 +46,7 @@ public class Player
     
     public int numOfShipsLeft()
     {
-        int counter = 5;
+        int counter = 3;
         for (Ship s: ships)
         {
             if (s.isLocationSet() && s.isDirectionSet())
@@ -47,8 +57,7 @@ public class Player
         
     }
     
-    public void chooseShipLocation(Ship s, int row, int col, int direction)
-    {
+    public void chooseShipLocation(Ship s, int row, int col, int direction){
         s.setLocation(row, col);
         s.setDirection(direction);
         playerGrid.addShip(s);

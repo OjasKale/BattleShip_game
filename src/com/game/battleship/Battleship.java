@@ -1,65 +1,145 @@
+package com.game.battleship;
 import java.util.Scanner;
 
 public class Battleship
 {
     public static Scanner reader = new Scanner(System.in);
       
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         System.out.println("JAVA BATTLESHIP - ** Ojas Kale **");  
         
-        System.out.println("\nPlayer SETUP:");
-        Player userPlayer = new Player();
-        setup(userPlayer);
+        System.out.println("\nSelect the Game Mode");
+        System.out.println("1. Human vs Human");
+        System.out.println("2. Human vs Computer");
+        System.out.println("Select your Choice: ");
+        int modeOption = reader.nextInt();
+        System.out.println("Mode Option: " + modeOption);
+        Player player1 = new Player();
+        Player player2 = new Player();
+        switch (modeOption) {
+		case 1:
+			System.out.println("\nPlayer1 SETUP:");
+	        player1.type = PlayerType.HUMAN;
+	        setup(player1);
+	        
+	        System.out.println("\nPlayer2 SETUP:");
+	        player2.type = PlayerType.HUMAN;
+	        setup(player2);
+	        
+	        
+			break;
+		case 2:
+			System.out.println("\nPlayer1 SETUP:");
+	        player1.type = PlayerType.HUMAN;
+	        setup(player1);
+	        
+			System.out.println("Computer SETUP...DONE...PRESS ENTER TO CONTINUE...");
+	        reader.nextLine();
+	        reader.nextLine();
+	        player2.type = PlayerType.COMPUTER;
+	        setupComputer(player2);
+	        System.out.println("\nCOMPUTER GRID (FOR DEBUG)...");
+	        player2.playerGrid.printShips();
+			
+			break;
+		default:
+			break;
+		}
         
-        System.out.println("Computer SETUP...DONE...PRESS ENTER TO CONTINUE...");
-        reader.nextLine();
-        reader.nextLine();
-        Player computer = new Player();
-        setupComputer(computer);
-        System.out.println("\nCOMPUTER GRID (FOR DEBUG)...");
-        computer.playerGrid.printShips();
+        //System.out.println("Ship1 for player 1");
+        //System.out.println(player1.ship1);
         
         String result = "";
-        while(true)
-        {
-            System.out.println(result);
-            System.out.println("\nUSER MAKE GUESS:");
-            result = askForGuess(userPlayer, computer);
+        
+        	if(modeOption == 2){
+        		while(true)
+                {
+	        		System.out.println(result);
+	                System.out.println("\nUSER MAKE GUESS:");
+	                result = askForGuess(player1, player2);
+	                
+	                if (player1.playerGrid.hasLost())
+	                {
+	                    System.out.println("COMP HIT!...USER LOSES");
+	                    break;
+	                }
+	                else if (player2.playerGrid.hasLost())
+	                {
+	                    System.out.println("HIT!...COMPUTER LOSES");
+	                    break;
+	                }
+	                
+	                System.out.println("\nCOMPUTER IS MAKING GUESS...");
+	                  
+	                  
+	                compMakeGuess(player2, player1);
+                }
+        	} else {
+        		while(true){
+        			System.out.println("\n USER1 Making Guess");
+        			result = askForGuess(player1, player2);
+        			System.out.println(result);
+        			if (player1.playerGrid.hasLost())
+	                {
+	                    System.out.println("HIT!...USER1 LOSES");
+	                    break;
+	                }
+	                else if (player2.playerGrid.hasLost())
+	                {
+	                    System.out.println("HIT!...USER2 LOSES");
+	                    break;
+	                }
+        			System.out.println("\n USER2 Making Guess");
+        			result = askForGuess(player2, player1);
+        			System.out.println(result);
+        			if (player1.playerGrid.hasLost())
+	                {
+	                    System.out.println("COMP HIT!...USER LOSES");
+	                    break;
+	                }
+	                else if (player2.playerGrid.hasLost())
+	                {
+	                    System.out.println("HIT!...COMPUTER LOSES");
+	                    break;
+	                }
+        		}
+        	}
             
-            if (userPlayer.playerGrid.hasLost())
-            {
-                System.out.println("COMP HIT!...USER LOSES");
-                break;
-            }
-            else if (computer.playerGrid.hasLost())
-            {
-                System.out.println("HIT!...COMPUTER LOSES");
-                break;
-            }
-            
-            System.out.println("\nCOMPUTER IS MAKING GUESS...");
-              
-              
-            compMakeGuess(computer, userPlayer);
-        }
+        
     }
     
     private static void compMakeGuess(Player comp, Player user)
     {
         Randomizer rand = new Randomizer();
-        int row = rand.nextInt(0, 9);
-        int col = rand.nextInt(0, 9);
+        int row = Randomizer.nextInt(0, 5);
+        int col = Randomizer.nextInt(0, 5);
         
         // While computer already guessed this posiiton, make a new random guess
         while (comp.oppGrid.alreadyGuessed(row, col))
         {
-            row = rand.nextInt(0, 9);
-            col = rand.nextInt(0, 9);
+            row = Randomizer.nextInt(0, 5);
+            col = Randomizer.nextInt(0, 5);
         }
         
         if (user.playerGrid.hasShip(row, col))
         {
+        	if(comp.ship1.contains(""+row+col)){
+        		comp.ship1.remove(""+row+col);
+            	if(comp.ship1.size() == 0){
+            		System.out.println("\n** COMP SANK A SHIP **");
+            	}
+            }else if(comp.ship2.contains(""+row+col)){
+            	comp.ship2.remove(""+row+col);
+            	if(comp.ship2.size() == 0){
+            		System.out.println("\n** COMP SANK A SHIP **");
+            	}
+            }else if(comp.ship3.contains(""+row+col)){
+            	comp.ship3.remove(""+row+col);
+            	if(comp.ship3.size() == 0){
+            		System.out.println("\n** COMP SANK A SHIP **");
+            	}
+            }
             comp.oppGrid.markHit(row, col);
             user.playerGrid.markHit(row, col);
             System.out.println("COMP HIT AT " + convertIntToLetter(row) + convertCompColToRegular(col));
@@ -92,32 +172,49 @@ public class Battleship
         
         while(true)
         {
-            System.out.print("Type in row (A-J): ");
+            System.out.print("Type in row (A-F): ");
             String userInputRow = reader.next();
             userInputRow = userInputRow.toUpperCase();
             oldRow = userInputRow;
             row = convertLetterToInt(userInputRow);
                     
-            System.out.print("Type in column (1-10): ");
+            System.out.print("Type in column (1-6): ");
             col = reader.nextInt();
             oldCol = col;
             col = convertUserColToProCol(col);
+
                     
-            //System.out.println("DEBUG: " + row + col);
-                    
-            if (col >= 0 && col <= 9 && row != -1)
+            if (col >= 0 && col <= 5 && row != -1)
                 break;
                     
             System.out.println("Invalid location!");
         }
         
-        if (opp.playerGrid.hasShip(row, col))
-        {
+        if(opp.playerGrid.previouslyHit(row, col)){
+        	return "** USER  HAS ALREADY HIT " + oldRow + oldCol + " **";
+        }else if (opp.playerGrid.hasShip(row, col)){
+        	
             p.oppGrid.markHit(row, col);
             opp.playerGrid.markHit(row, col);
-            return "** USER HIT AT " + oldRow + oldCol + " **";
-        }
-        else
+            if(opp.ship1.contains(""+row+col)){
+            	opp.ship1.remove(""+row+col);
+            	if(opp.ship1.size() == 0){
+            		return "** USER  HIT AT " + oldRow + oldCol + " **" + "\n** USER SANK A SHIP **";
+            	}
+            }else if(opp.ship2.contains(""+row+col)){
+            	opp.ship2.remove(""+row+col);
+            	if(opp.ship2.size() == 0){
+            		return "** USER  HIT AT " + oldRow + oldCol + " **" + "\n** USER SANK A SHIP **";
+            	}
+            }else if(opp.ship3.contains(""+row+col)){
+            	opp.ship3.remove(""+row+col);
+            	if(opp.ship3.size() == 0){
+            		return "** USER  HIT AT " + oldRow + oldCol + " **" + "\n** USER SANK A SHIP **";
+            	}
+            }
+            
+            return "** USER  HIT AT " + oldRow + oldCol + " **";
+        }else
         {
             p.oppGrid.markMiss(row, col);
             opp.playerGrid.markMiss(row, col);
@@ -125,8 +222,7 @@ public class Battleship
         }
     }
     
-    private static void setup(Player p)
-    {
+    private static void setup(Player p) throws Exception{
         p.playerGrid.printShips();
         System.out.println();
         int counter = 1;
@@ -141,12 +237,12 @@ public class Battleship
                 int dir = -1;
                 while(true)
                 {
-                    System.out.print("Type in row (A-J): ");
+                    System.out.print("Type in row (A-F): ");
                     String userInputRow = reader.next();
                     userInputRow = userInputRow.toUpperCase();
                     row = convertLetterToInt(userInputRow);
                     
-                    System.out.print("Type in column (1-10): ");
+                    System.out.print("Type in column (1-6): ");
                     col = reader.nextInt();
                     col = convertUserColToProCol(col);
                     
@@ -167,9 +263,18 @@ public class Battleship
                 }
             
                 //System.out.println("FURTHER DEBUG: row = " + row + "; col = " + col);
+                System.out.println("Norm Counter!!");
+                System.out.println(normCounter);
                 p.ships[normCounter].setLocation(row, col);
                 p.ships[normCounter].setDirection(dir);
-                p.playerGrid.addShip(p.ships[normCounter]);
+                if(normCounter == 0){
+                	p.ship1 = p.playerGrid.addShip(p.ships[normCounter]);
+                }else if(normCounter == 1){
+                	p.ship2 = p.playerGrid.addShip(p.ships[normCounter]);
+                }else{
+                	p.ship3 = p.playerGrid.addShip(p.ships[normCounter]);
+                }
+                
                 p.playerGrid.printShips();
                 System.out.println();
                 System.out.println("You have " + p.numOfShipsLeft() + " remaining ships to place.");
@@ -183,26 +288,25 @@ public class Battleship
     private static void setupComputer(Player p)
     {
         System.out.println();
-        int counter = 1;
         int normCounter = 0;
         
-        Randomizer rand = new Randomizer();
+        //Randomizer rand = new Randomizer();
         
-        while (p.numOfShipsLeft() > 0)
-        {
-            for (Ship s: p.ships)
-            {
-                int row = rand.nextInt(0, 9);
-                int col = rand.nextInt(0, 9);
-                int dir = rand.nextInt(0, 1);
+        while (p.numOfShipsLeft() > 0){
+            for (Ship s: p.ships){
+            	System.out.println("Computer ship number!!");
+            	System.out.println(normCounter);
+                int row = Randomizer.nextInt(0, 5);
+                int col = Randomizer.nextInt(0, 5);
+                int dir = Randomizer.nextInt(0, 1);
                 
-                //System.out.println("DEBUG: row-" + row + "; col-" + col + "; dir-" + dir);
+                System.out.println("DEBUG IN Setup!: row-" + row + "; col-" + col + "; dir-" + dir);
                 
                 while (hasErrorsComp(row, col, dir, p, normCounter)) // while the random nums make error, start again
                 {
-                    row = rand.nextInt(0, 9);
-                    col = rand.nextInt(0, 9);
-                    dir = rand.nextInt(0, 1);
+                    row = Randomizer.nextInt(0, 5);
+                    col = Randomizer.nextInt(0, 5);
+                    dir = Randomizer.nextInt(0, 1);
                     //System.out.println("AGAIN-DEBUG: row-" + row + "; col-" + col + "; dir-" + dir);
                 }
                 
@@ -210,9 +314,15 @@ public class Battleship
                 p.ships[normCounter].setLocation(row, col);
                 p.ships[normCounter].setDirection(dir);
                 p.playerGrid.addShip(p.ships[normCounter]);
+                if(normCounter == 0){
+                	p.ship1 = p.playerGrid.addShip(p.ships[normCounter]);
+                }else if(normCounter == 1){
+                	p.ship2 = p.playerGrid.addShip(p.ships[normCounter]);
+                }else{
+                	p.ship3 = p.playerGrid.addShip(p.ships[normCounter]);
+                }
                 
                 normCounter++;
-                counter++;
             }
         }
     }
@@ -289,7 +399,7 @@ public class Battleship
         {
             int checker = length + col;
             //System.out.println("DEBUG: checker is " + checker);
-            if (checker > 10)
+            if (checker > 6)
             {
                 return true;
             }
@@ -300,7 +410,7 @@ public class Battleship
         {
             int checker = length + row;
             //System.out.println("DEBUG: checker is " + checker);
-            if (checker > 10)
+            if (checker > 6)
             {
                 return true;
             }
@@ -312,7 +422,7 @@ public class Battleship
             // For each location a ship occupies, check if ship is already there
             for (int i = col; i < col+length; i++)
             {
-                //System.out.println("DEBUG: row = " + row + "; col = " + i);
+                System.out.println("DEBUG: row = " + row + "; col = " + i);
                 if(p.playerGrid.hasShip(row, i))
                 {
                     return true;

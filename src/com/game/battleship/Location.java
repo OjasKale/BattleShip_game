@@ -1,3 +1,5 @@
+package com.game.battleship;
+
 public class Location
 {
     // Global Vars

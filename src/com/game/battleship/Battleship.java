@@ -251,7 +251,7 @@ public class Battleship
                     
                     //System.out.println("DEBUG: " + row + col + dir);
                     
-                    if (col >= 0 && col <= 9 && row != -1 && dir != -1) // Check valid input
+                    if (col >= 0 && col <= 6 && row != -1 && dir != -1) // Check valid input
                     {
                         if (!hasErrors(row, col, dir, p, normCounter)) // Check if errors will produce (out of bounds)
                         {
@@ -313,7 +313,7 @@ public class Battleship
                 //System.out.println("FURTHER DEBUG: row = " + row + "; col = " + col);
                 p.ships[normCounter].setLocation(row, col);
                 p.ships[normCounter].setDirection(dir);
-                p.playerGrid.addShip(p.ships[normCounter]);
+                //p.playerGrid.addShip(p.ships[normCounter]);
                 if(normCounter == 0){
                 	p.ship1 = p.playerGrid.addShip(p.ships[normCounter]);
                 }else if(normCounter == 1){
@@ -338,7 +338,7 @@ public class Battleship
         {
             int checker = length + col;
             //System.out.println("DEBUG: checker is " + checker);
-            if (checker > 10)
+            if (checker > 6)
             {
                 System.out.println("SHIP DOES NOT FIT");
                 return true;
@@ -350,7 +350,7 @@ public class Battleship
         {
             int checker = length + row;
             //System.out.println("DEBUG: checker is " + checker);
-            if (checker > 10)
+            if (checker > 6)
             {
                 System.out.println("SHIP DOES NOT FIT");
                 return true;
